@@ -18,7 +18,7 @@ async function findRoomByRoomId(roomId:number) {
     return room
   }
   async function createBooking(roomId:number,userId:number){
-    await prisma.booking.create({
+    return await prisma.booking.create({
       data:{
         userId,
         roomId
@@ -33,6 +33,19 @@ async function findRoomByRoomId(roomId:number) {
     })
     return peopleInRoom.length
   }
+  async function changeRoom(roomId:number,bookingId:number){
+  
+    return await prisma.booking.update({
+      where: {
+        id:bookingId
+      },
+      data: {
+        roomId:roomId,
+      },
+    })
+  
+  }
+
 
 
 
@@ -42,6 +55,7 @@ const bookingRepository = {
     findRoomByRoomId,
     createBooking,
     peopleRoom,
+    changeRoom,
   };
   
   export default bookingRepository;

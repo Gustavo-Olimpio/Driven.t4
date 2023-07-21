@@ -30,13 +30,31 @@ async function createBooking(roomId: number, userId: number) {
     throw "error"
   }
   // cria um booking
-  await bookingRepository.createBooking(roomId,userId);
+  const booking = await bookingRepository.createBooking(roomId,userId);
   return {
-    roomId:roomId
+    bookingId:booking.id
+  }
+}
+async function putBooking(roomId:number,userId:number,bookingId:number) {
+  //valida se existe quarto
+  const room = await bookingRepository.findRoomByRoomId(roomId);
+  if (!room) throw notFoundError();
+  //valida se o quarto possui capacidade
+  const max = await bookingRepository.peopleRoom(roomId);
+  if (max === room.capacity) throw "error"
+  //valida regra de negocio
+  const findBooking = await bookingRepository.findBooking(userId);
+  if (!findBooking) throw "error"
+  // troca o quarto
+  const booking = await bookingRepository.changeRoom(roomId,findBooking.id);
+  
+  return {
+    bookingId: booking.id
   }
 }
 
 export default {
   listBooking,
   createBooking,
+  putBooking
 }
